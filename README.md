@@ -1,36 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Letterline
+
+**AI-curated market and technology briefings without the noise.**
+
+Letterline is a smart news aggregator focused on AI and finance. Enter a topic — or browse by market — and get a live preview of the top 5 stories, curated and summarized by a large language model. Request a full 20-story briefing delivered as a PDF to your inbox.
+
+> **Status:** Not yet live. Deployment coming soon.
+
+---
+
+## Demo
+
+<!-- Add a demo video or GIF here -->
+<!-- Example: ![Demo](./docs/demo.gif) -->
+
+<!-- Add screenshots here -->
+<!-- Example: ![Screenshot](./docs/screenshot.png) -->
+
+*Screenshots and demo video will be added before launch.*
+
+---
+
+## Features
+
+- **Topic-based curation** — Enter any topic (AI agents, crypto markets, India stocks, NLP, etc.) and get stories relevant to it
+- **Live streaming preview** — Top 5 stories stream in real time as the LLM processes them
+- **Market data widgets** — Detects US or India market queries and shows live stock/index prices
+- **Full briefing by email** — 20-story PDF briefing sent directly to your inbox via Resend
+- **Dark mode** — System-aware with manual toggle, persisted across sessions
+- **Resizable split panel** — Drag to resize the topic panel and stories panel
+- **15+ sources** — Pulls from TechCrunch, Wired, MIT Tech Review, VentureBeat, Reuters, Bloomberg, CoinDesk, Economic Times, Business Standard, and more
+- **Rate limiting** — Built-in per-IP rate limiting (3 requests/hour)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Styling | Tailwind CSS v4 |
+| LLM | Groq API — Llama 3.3 70B |
+| News sources | RSS via `rss-parser`, Algolia HN API, arXiv API |
+| PDF generation | `@react-pdf/renderer` v4 |
+| Email delivery | Resend |
+| Market data | Yahoo Finance v8 API, Coinbase API |
+| Deployment | Vercel (planned) |
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/xHydr1dex/Letterline.git
+cd Letterline
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file in the root:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM=you@yourdomain.com
+```
+
+- **Groq API key** — Get one free at [console.groq.com](https://console.groq.com)
+- **Resend API key** — Get one at [resend.com](https://resend.com). Free tier works for testing (verified sender email only)
+- **RESEND_FROM** — Must match a verified sender in your Resend account
+
+### 4. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How It Works
 
-## Learn More
+1. **User enters a topic** (or leaves blank for broad AI + Finance coverage)
+2. **15+ RSS feeds are fetched** and deduplicated
+3. **Groq (Llama 3.3 70B) streams a response** — top 5 stories as newline-delimited JSON
+4. **Stories render in real time** in the right panel
+5. **User enters their email** to receive the full 20-story PDF
+6. **PDF is generated server-side** with `@react-pdf/renderer` and sent via Resend using Next.js `after()` for non-blocking background delivery
 
-To learn more about Next.js, take a look at the following resources:
+### Market detection
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If the topic contains keywords like `nifty`, `sensex`, `bse`, `india` → Indian market widget loads.
+If the topic contains `s&p`, `nasdaq`, `dow`, `us market` → US market widget loads.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+briefly/
+├── app/
+│   ├── page.tsx              # Main single-page UI
+│   ├── layout.tsx            # Root layout with dark mode script
+│   ├── globals.css           # Tailwind v4 theme + dark mode
+│   └── api/
+│       ├── preview/          # Streaming Groq endpoint
+│       ├── email/            # PDF generation + Resend
+│       ├── stocks/           # Yahoo Finance stock data
+│       └── market/           # S&P 500, Nasdaq, BTC strip
+├── components/
+│   ├── Masthead.tsx          # Header with date + theme toggle
+│   ├── MarketStrip.tsx       # Top ticker bar
+│   ├── StockGrid.tsx         # 4×3 stock grid (US or India)
+│   └── ThemeToggle.tsx       # Light/dark toggle button
+├── lib/
+│   ├── sources.ts            # RSS feed URLs
+│   ├── fetchNews.ts          # RSS fetcher + formatter
+│   ├── buildPrompt.ts        # Groq prompt builders
+│   ├── generatePdf.ts        # PDF layout with react-pdf
+│   └── rateLimit.ts          # In-memory IP rate limiter
+└── .env.local                # API keys (not committed)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Deployment (Planned — Vercel)
+
+1. Push to GitHub (this repo)
+2. Import into [vercel.com](https://vercel.com)
+3. Add environment variables in Vercel dashboard
+4. Deploy
+
+The app uses `runtime = 'nodejs'` on API routes to support PDF generation and streaming. No database required.
+
+---
+
+## Roadmap
+
+- [ ] Vercel deployment + custom domain
+- [ ] Mobile-responsive layout
+- [ ] Scheduled daily email digest
+- [ ] More source categories (policy, science, macro)
+- [ ] Story deduplication across sources
+- [ ] User-defined topic presets
+
+---
+
+## Sources
+
+Letterline aggregates from 15+ publications including:
+
+TechCrunch · Wired · MIT Technology Review · VentureBeat · The Verge · Ars Technica · Reuters Business · Bloomberg Technology · CoinDesk · Hacker News · arXiv (cs.AI) · Economic Times Markets · Economic Times Economy · Business Standard · Financial Express
+
+---
+
+## License
+
+MIT
