@@ -8,15 +8,19 @@ Letterline is a smart news aggregator focused on AI and finance. Enter a topic â
 
 ---
 
-## Demo
+## Screenshots
+
+**Dark mode â€” topic search with live story preview**
+![Letterline dark mode](./docs/screenshot-dark.png)
+
+**Light mode**
+![Letterline light mode](./docs/screenshot-light.png)
+
+**Indian market data widget**
+![Market prices](./docs/screenshot-markets.png)
 
 <!-- Add a demo video or GIF here -->
 <!-- Example: ![Demo](./docs/demo.gif) -->
-
-<!-- Add screenshots here -->
-<!-- Example: ![Screenshot](./docs/screenshot.png) -->
-
-*Screenshots and demo video will be added before launch.*
 
 ---
 
