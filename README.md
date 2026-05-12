@@ -8,6 +8,18 @@ Letterline is a smart news aggregator focused on AI and finance. Enter a topic �
 
 ---
 
+## About
+
+Most news aggregators drown you in volume. Letterline does the opposite — it reads everything so you don't have to, then surfaces only what's worth your time.
+
+The idea is simple: you tell it what you care about (or don't — broad AI + Finance coverage works too), and it pulls from 15+ publications, runs the stories through a language model, and hands you back a clean, ranked briefing. No ads, no algorithmic engagement traps, no 47-tab rabbit holes. Just signal.
+
+The full briefing lands as a PDF in your inbox — formatted like a proper newsletter, not a data dump. It's built for people who want to stay sharp on AI and markets without spending their morning scrolling.
+
+Built as a personal project at the intersection of two things worth paying attention to: large language models and financial markets.
+
+---
+
 ## Screenshots
 
 **Dark mode — topic search with live story preview**
